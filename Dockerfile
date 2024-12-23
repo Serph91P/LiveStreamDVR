@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM node:20-bullseye-slim
+FROM node:22-bookworm-slim
 
 # make app folder
 RUN mkdir -p /usr/local/share/twitchautomator \
@@ -117,6 +117,13 @@ RUN cd /usr/local/share/twitchautomator/client-vue \
 COPY ./docker/fetch-tdl.sh /tmp/fetch-tdl.sh
 RUN bash /tmp/fetch-tdl.sh
 ENV TCD_TWITCHDOWNLOADER_PATH=/usr/local/bin/TwitchDownloaderCLI
+
+# make sure plugin path is set with correct permissions
+
+ENV STREAMLINK_PLUGIN_PATH=/usr/local/share/twitchautomator/data/streamlink_plugins
+RUN mkdir -p /usr/local/share/twitchautomator/data/streamlink_plugins \
+    && chown -R node:node /usr/local/share/twitchautomator/data/streamlink_plugins \
+    && chmod -R 775 /usr/local/share/twitchautomator/data/streamlink_plugins
 
 # download ttv-lol-plugin
 COPY ./docker/fetch-ttv-lol.sh /tmp/fetch-ttv-lol.sh
